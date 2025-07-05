@@ -3,14 +3,17 @@ import React from "react";
 import Header from "./components/Header";
 import BalanceCard from "./components/balance";
 import TransactionPage from "./components/List";
+import { useState,useEffect } from "react";
 
 export default function App() {
-  const balances = [
-    { platform: "Wallet", balance: 1200.50 },
-    { platform: "Bank Account", balance: 15300.75 },
-    { platform: "UPI", balance: 3500.00 },
-    { platform: "Crypto", balance: 25000.00 },
-  ];
+   const [balances, setBalances] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/balances")
+      .then((res) => res.json())
+      .then((data) => setBalances(data))
+      .catch((err) => console.error(err));
+  }, []);
   return (
     <div className="min-h-screen min-w-screen flex flex-col">
       <Header />
@@ -35,15 +38,16 @@ export default function App() {
           </div>
         </div>
         {/* Right side */}
-         <div className="min-w-2xl bg-gradient-to-b from-yellow-50 to-yellow-100 flex flex-col items-center justify-center p-8">
-      <h1 className="text-4xl font-bold mb-16 text-gray-800">Your Balances</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-        {balances.map((item) => (
+         <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-100">
+        Your Balances
+      </h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
+        {balances.map((balance) => (
           <BalanceCard
-            key={item.platform}
-            platform={item.platform}
-            balance={item.balance}
+            key={balance.id}
+            accountName={balance.account_name}
+            amount={balance.amount}
           />
         ))}
       </div>
