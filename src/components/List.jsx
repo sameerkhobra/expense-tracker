@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 
 // Dummy categories (replace with backend data later)
 const dummyCategories = [
@@ -7,17 +8,10 @@ const dummyCategories = [
   { id: 3, name: "Entertainment" },
 ];
 
+
+
 export default function TransactionPage() {
-  const [transactions, setTransactions] = useState([
-    {
-      id: 1,
-      amount: 50.0,
-      type: "expense",
-      category: "Food",
-      date: "2025-07-04",
-      description: "Groceries",
-    },
-  ]);
+  const [transactions, setTransactions] = useState([]); // empty!
 
   const [formData, setFormData] = useState({
     amount: "",
@@ -27,26 +21,44 @@ export default function TransactionPage() {
     description: "",
   });
 
+  useEffect(() => {
+    fetch("http://localhost:4000/transactions")
+      .then((res) => res.json())
+      .then((data) =>
+        setTransactions(
+          data.map((tx) => ({
+            ...tx,
+            amount: Number(tx.amount), // ✅ always a number
+          }))
+        )
+      )
+      .catch((err) => console.error(err));
+  }, []);
+
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleAddTransaction = (e) => {
+  const handleAddTransaction = async (e) => {
     e.preventDefault();
 
-    const newTransaction = {
-      id: transactions.length + 1,
+    const newTx = {
       amount: parseFloat(formData.amount),
       type: formData.type,
-      category:
-        dummyCategories.find(
-          (cat) => cat.id === parseInt(formData.category_id)
-        )?.name || "Unknown",
+      category_id: parseInt(formData.category_id),
       date: formData.date,
       description: formData.description,
     };
 
-    setTransactions([...transactions, newTransaction]);
+    const res = await fetch("http://localhost:4000/transactions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newTx),
+    });
 
+    const savedTx = await res.json();
+
+    // Optional: update local state
+    setTransactions([...transactions, savedTx]);
     setFormData({
       amount: "",
       type: "expense",
@@ -55,9 +67,59 @@ export default function TransactionPage() {
       description: "",
     });
   };
+  const initialCategories = [
+    { id: 1, name: "Food" },
+    { id: 2, name: "Rent" },
+    { id: 3, name: "Entertainment" },
+    { id: 4, name: "Utilities" },
+    { id: 5, name: "Travel" },
+    { id: 6, name: "Health" },
+    { id: 7, name: "Education" },
+    { id: 8, name: "Shopping" },
+    { id: 9, name: "Investment" },
+    { id: 10, name: "Gifts" },
+    { id: 11, name: "Insurance" },
+    { id: 12, name: "Savings" },
+    { id: 13, name: "Charity" },
+    { id: 14, name: "Subscriptions" },
+    { id: 15, name: "Miscellaneous" },
+    // ... Add as many as you want
+  ];
+
+  // const [categories, setCategories] = useState(initialCategories);
+
+  // useEffect(() => {
+  //   fetch("http://localhost:4000/categories")
+  //     .then((res) => res.json())
+  //     .then((data) => setCategories(data))
+  //     .catch((err) => console.error(err));
+  // }, []);
+
+  // app.get('/categories', (req, res) => {
+  //   db.query('SELECT * FROM Categories', (err, results) => {
+  //     if (err) {
+  //       console.error(err);
+  //       return res.status(500).json({ error: 'Database error' });
+  //     }
+  //     res.json(results);
+  //   });
+  // });
+
+  const [categories, setCategories] = useState([]);
+
+ useEffect(() => {
+  fetch("http://localhost:4000/categories")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data); // Should be an array
+      setCategories(data);
+    })
+    .catch((err) => console.error(err));
+}, []);
+
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 ">
       <h1 className="text-3xl font-bold mb-6 text-center text-red-400">
         💰 Add your transactions
       </h1>
@@ -67,11 +129,11 @@ export default function TransactionPage() {
         onSubmit={handleAddTransaction}
         className="bg-yellow-300 shadow-md rounded-lg p-6 mb-8"
       >
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-white-900">
           Add Transaction
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
           <input
             name="amount"
             type="number"
@@ -101,12 +163,14 @@ export default function TransactionPage() {
             className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="">Select Category</option>
-            {dummyCategories.map((cat) => (
+            {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.name}
               </option>
             ))}
           </select>
+
+
 
           <input
             name="date"
@@ -160,40 +224,35 @@ export default function TransactionPage() {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white divide-y divide-gray-200">
             {transactions.map((tx) => (
               <tr
                 key={tx.id}
-                className="hover:bg-gray-50 transition duration-150"
+                className="hover:bg-gray-100 transition-colors duration-200"
               >
-                <td className="py-3 px-4 border-b border-gray-800">
-                  {tx.date}
-                </td>
-                <td className="py-3 px-4 border-b border-gray-800 text-green-700 font-medium">
+                <td className="py-3 px-6 text-sm text-gray-700">{tx.date}</td>
+                <td className="py-3 px-6 text-sm text-green-600 font-semibold">
                   ${tx.amount.toFixed(2)}
                 </td>
-                <td className="py-3 px-4 border-b border-gray-800 capitalize">
+                <td className="py-3 px-6 text-sm capitalize text-gray-700">
                   {tx.type}
                 </td>
-                <td className="py-3 px-4 border-b border-gray-800">
-                  {tx.category}
-                </td>
-                <td className="py-3 px-4 border-b border-gray-800">
-                  {tx.description}
-                </td>
+                <td className="py-3 px-6 text-sm text-gray-700">{tx.category}</td>
+                <td className="py-3 px-6 text-sm text-gray-700">{tx.description}</td>
               </tr>
             ))}
             {transactions.length === 0 && (
               <tr>
                 <td
                   colSpan="5"
-                  className="text-center py-6 text-gray-800 italic"
+                  className="py-8 text-center text-gray-500 italic"
                 >
                   No transactions yet.
                 </td>
               </tr>
             )}
           </tbody>
+
         </table>
       </div>
     </div>

@@ -14,7 +14,7 @@ export default function App() {
   return (
     <div className="min-h-screen min-w-screen flex flex-col">
       <Header />
-      <main className="flex flex-col md:flex-row flex-grow">
+      <main className="flex flex-col md:flex-row flex-grow min-h-screen">
         {/* Left side */}
         <div className="flex-1 bg-yellow-300 p-12 flex flex-col justify-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -49,7 +49,7 @@ export default function App() {
       </div>
     </div>
       </main>
-        <div>
+        <div className="min-h-screen bg-yellow-200">
           <TransactionPage/>
         </div>
     </div>
