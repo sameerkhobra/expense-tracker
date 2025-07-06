@@ -173,6 +173,107 @@ app.get('/wallets', (req, res) => {
   });
 });
 
+app.get('/expenses-by-category', (req, res) => {
+  const query = `
+    SELECT 
+      c.name AS category_name,
+      SUM(t.amount) AS total_amount
+    FROM Transactions t
+    JOIN Categories c ON t.category_id = c.id
+    WHERE t.type = 'expense'
+    GROUP BY c.name;
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+});
+
+// GET /budgets
+app.get('/budgets', (req, res) => {
+  const query = `
+    SELECT 
+      b.id,
+      b.category_id,
+      c.name AS category_name,
+      b.amount,
+      b.month,
+      b.year,
+      COALESCE(SUM(t.amount), 0) AS spent
+    FROM Budgets b
+    JOIN Categories c ON b.category_id = c.id
+    LEFT JOIN Transactions t 
+      ON t.category_id = b.category_id 
+      AND t.type = 'expense'
+      AND EXTRACT(MONTH FROM t.date) = b.month
+      AND EXTRACT(YEAR FROM t.date) = b.year
+    GROUP BY b.id, c.name
+    ORDER BY b.year DESC, b.month DESC, c.name;
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching budgets:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+});
+
+// POST /budgets
+app.post('/budgets', (req, res) => {
+  const { user_id = 1, category_id, amount, month, year } = req.body;
+  if (!category_id || !amount || !month || !year) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const query = `
+    INSERT INTO Budgets (user_id, category_id, amount, month, year)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING *;
+  `;
+
+  db.query(query, [user_id, category_id, amount, month, year], (err, result) => {
+    if (err) {
+      console.error('Error inserting budget:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(result.rows[0]);
+  });
+});
+
+// PUT /budgets/:id
+app.put('/budgets/:id', (req, res) => {
+  const { id } = req.params;
+  const { amount } = req.body;
+
+  if (!amount) {
+    return res.status(400).json({ error: 'Amount is required' });
+  }
+
+  const query = `
+    UPDATE Budgets
+    SET amount = $1
+    WHERE id = $2
+    RETURNING *;
+  `;
+
+  db.query(query, [amount, id], (err, result) => {
+    if (err) {
+      console.error('Error updating budget:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Budget not found' });
+    }
+
+    res.json(result.rows[0]);
+  });
+});
+
 
 // ✅ Start server
 const PORT = process.env.PORT || 4000;

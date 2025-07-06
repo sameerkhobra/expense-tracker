@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import BalanceCard from "./components/BalanceCard";
 import TransactionPage from "./components/List";
+import Dashboard from "./components/dashboard";
+import BudgetsPage from "./components/budgetpage";
 
 export default function App() {
   const [wallets, setWallets] = useState([]);
@@ -59,6 +61,12 @@ export default function App() {
 
       <div className="min-h-screen bg-yellow-200">
         <TransactionPage />
+      </div>
+      <div className="min-h-screen bg-yellow-200">
+            <Dashboard/>
+      </div>
+      <div className="min-h-screen bg-yellow-200">
+            <BudgetsPage/>
       </div>
     </div>
   );
