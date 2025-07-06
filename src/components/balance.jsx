@@ -1,14 +1,25 @@
-import React from "react";
+import { useState, useEffect } from 'react';
+import BalanceCard from './BalanceCard';
 
-export default function BalanceCard({ accountName, amount }) {
+export default function Balance() {
+  const [wallets, setWallets] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:4000/balances')
+      .then(res => res.json())
+      .then(data => setWallets(data))
+      .catch(err => console.error(err));
+  }, []);
+
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center justify-center w-full h-36 hover:shadow-2xl transition-shadow">
-      <h3 className="text-lg font-semibold mb-2 text-gray-800">
-        {accountName}
-      </h3>
-      <p className="text-3xl font-bold text-green-600">
-        ₹ {Number(amount).toFixed(2)}
-      </p>
+    <div>
+      {wallets.map(wallet => (
+        <BalanceCard
+          key={wallet.id}
+          accountName={wallet.wallet_name}
+          amount={wallet.amount}
+        />
+      ))}
     </div>
   );
 }

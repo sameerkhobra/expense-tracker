@@ -50,23 +50,23 @@ app.get('/categories', (req, res) => {
 
 // ✅ GET all transactions
 app.get('/transactions', (req, res) => {
-  const sql = `
+  const query = `
     SELECT 
-      t.id, 
-      t.amount, 
-      t.type, 
-      t.date, 
-      t.description, 
+      t.id,
+      t.amount,
+      t.type,
+      t.date,
+      t.description,
       c.name AS category,
-      w.name AS wallet
-    FROM transactions t
+      w.name AS wallet_name
+    FROM Transactions t
     LEFT JOIN Categories c ON t.category_id = c.id
     LEFT JOIN Wallets w ON t.wallet_id = w.id
+    ORDER BY t.date DESC
   `;
-
-  db.query(sql, (err, results) => {
+  db.query(query, (err, results) => {
     if (err) {
-      console.error('Error fetching transactions:', err);
+      console.error(err);
       return res.status(500).json({ error: 'Database error' });
     }
     res.json(results);
@@ -76,7 +76,22 @@ app.get('/transactions', (req, res) => {
 
 // ✅ Get all balances
 app.get('/balances', (req, res) => {
-  db.query('SELECT * FROM Balances', (err, results) => {
+  const query = `
+    SELECT 
+      b.id,
+      b.user_id,
+      b.wallet_id,
+      w.name AS wallet_name,
+      b.amount,
+      b.currency,
+      b.last_updated
+    FROM Balances b
+    JOIN Wallets w ON b.wallet_id = w.id
+    ORDER BY b.amount DESC
+    LIMIT 4;
+  `;
+
+  db.query(query, (err, results) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: 'Database error' });
@@ -84,6 +99,7 @@ app.get('/balances', (req, res) => {
     res.json(results);
   });
 });
+
 
 // ✅ Update a balance if needed
 app.put('/balances/:id', (req, res) => {
@@ -108,27 +124,53 @@ app.put('/balances/:id', (req, res) => {
 app.post('/transactions', (req, res) => {
   const { amount, type, category_id, wallet_id, date, description } = req.body;
 
-  // Validate required fields (include wallet_id!)
-  if (!amount || !type || !category_id || !wallet_id || !date) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
-  const sql = `
-    INSERT INTO transactions (amount, type, category_id, wallet_id, date, description)
+  // 1. Insert transaction
+  const insertTx = `
+    INSERT INTO Transactions (amount, type, category_id, wallet_id, date, description)
     VALUES (?, ?, ?, ?, ?, ?)
   `;
 
-  db.query(
-    sql,
-    [amount, type, category_id, wallet_id, date, description],
-    (err, result) => {
-      if (err) {
-        console.error('Error inserting transaction:', err);
-        return res.status(500).json({ error: 'Database error' });
-      }
-      res.json({ id: result.insertId, ...req.body });
+  db.query(insertTx, [amount, type, category_id, wallet_id, date, description], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to insert transaction' });
     }
-  );
+
+    // 2. Update wallet balance
+    const updateWallet = `
+      UPDATE Balances
+      SET amount = amount ${type === 'expense' ? '-' : '+'} ?
+      WHERE wallet_id = ?
+    `;
+
+    db.query(updateWallet, [amount, wallet_id], (err2) => {
+      if (err2) {
+        console.error(err2);
+        return res.status(500).json({ error: 'Failed to update wallet balance' });
+      }
+
+      res.json({
+        id: result.insertId,
+        amount,
+        type,
+        category_id,
+        wallet_id,
+        date,
+        description
+      });
+    });
+  });
+});
+
+
+app.get('/wallets', (req, res) => {
+  db.query('SELECT * FROM Wallets', (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
 });
 
 

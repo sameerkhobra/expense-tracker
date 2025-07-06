@@ -39,6 +39,7 @@ export default function TransactionsTable({ transactions }) {
             <thead className="bg-gradient-to-r from-blue-100 to-blue-200">
               <tr>
                 <th className="py-3 px-4 text-left border-b border-gray-300">Date</th>
+                <th className="py-3 px-4 text-left border-b border-gray-300">wallet</th>
                 <th className="py-3 px-4 text-left border-b border-gray-300">Amount</th>
                 <th className="py-3 px-4 text-left border-b border-gray-300">Type</th>
                 <th className="py-3 px-4 text-left border-b border-gray-300">Category</th>
@@ -53,6 +54,8 @@ export default function TransactionsTable({ transactions }) {
                     className="hover:bg-blue-50 transition-colors duration-200"
                   >
                     <td className="py-3 px-6 text-sm text-gray-700">{tx.date}</td>
+                    <td className="py-3 px-6 text-sm text-gray-700">{tx.wallet_name}</td>
+
                     <td className="py-3 px-6 text-sm text-green-600 font-semibold">
                       ${Number(tx.amount).toFixed(2)}
                     </td>

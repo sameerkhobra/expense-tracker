@@ -1,32 +1,32 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TransactionsTable from "./transactions";
-// Dummy categories (replace with backend data later)
-
-
 
 export default function TransactionPage() {
+  const [transactions, setTransactions] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [wallets, setWallets] = useState([]);
 
-useEffect(() => {
+  // ✅ Fetch categories
+  useEffect(() => {
+    fetch("http://localhost:4000/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  // ✅ Fetch wallets for the wallet <select>
+ useEffect(() => {
   fetch("http://localhost:4000/wallets")
-    .then((res) => res.json())
-    .then((data) => setWallets(data))
-    .catch((err) => console.error(err));
+    .then(res => res.json())
+    .then(data => {
+      console.log("Wallets API response:", data); // See this in console!
+      setWallets(data);
+    })
+    .catch(err => console.error(err));
 }, []);
 
-  const [transactions, setTransactions] = useState([]); // empty!
 
-  const [formData, setFormData] = useState({
-    amount: "",
-    type: "expense",
-    category_id: "",
-    date: "",
-    description: "",
-      wallet_id: "", 
-
-  });
-
+  // ✅ Fetch transactions
   useEffect(() => {
     fetch("http://localhost:4000/transactions")
       .then((res) => res.json())
@@ -34,12 +34,21 @@ useEffect(() => {
         setTransactions(
           data.map((tx) => ({
             ...tx,
-            amount: Number(tx.amount), // ✅ always a number
+            amount: Number(tx.amount),
           }))
         )
       )
       .catch((err) => console.error(err));
   }, []);
+
+  const [formData, setFormData] = useState({
+    amount: "",
+    type: "expense",
+    category_id: "",
+    wallet_id: "",
+    date: "",
+    description: "",
+  });
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,14 +57,13 @@ useEffect(() => {
     e.preventDefault();
 
     const newTx = {
-  amount: parseFloat(formData.amount),
-  type: formData.type,
-  category_id: parseInt(formData.category_id),
-  wallet_id: parseInt(formData.wallet_id),
-  date: formData.date,
-  description: formData.description,
-};
-
+      amount: parseFloat(formData.amount),
+      type: formData.type,
+      category_id: parseInt(formData.category_id),
+      wallet_id: parseInt(formData.wallet_id),
+      date: formData.date,
+      description: formData.description,
+    };
 
     const res = await fetch("http://localhost:4000/transactions", {
       method: "POST",
@@ -65,40 +73,24 @@ useEffect(() => {
 
     const savedTx = await res.json();
 
-    // Optional: update local state
     setTransactions([...transactions, savedTx]);
     setFormData({
       amount: "",
       type: "expense",
       category_id: "",
+      wallet_id: "",
       date: "",
       description: "",
     });
   };
 
- 
-
-  const [categories, setCategories] = useState([]);
-
- useEffect(() => {
-  fetch("http://localhost:4000/categories")
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data); // Should be an array
-      setCategories(data);
-    })
-    .catch((err) => console.error(err));
-}, []);
-
-
   return (
     <div>
-      <div className="max-w-4xl mx-auto p-6 ">
+      <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-3xl font-bold mb-6 text-center text-red-400">
           💰 Add your transactions
         </h1>
 
-        {/* Form */}
         <form
           onSubmit={handleAddTransaction}
           className="bg-yellow-300 shadow-md rounded-lg p-6 mb-8"
@@ -143,22 +135,21 @@ useEffect(() => {
                 </option>
               ))}
             </select>
+
             <select
-              name="wallet_id"
-              value={formData.wallet_id}
-              onChange={handleChange}
-              required
-              className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="">Select Wallet</option>
-              {wallets.map((wallet) => (
-                <option key={wallet.id} value={wallet.id}>
-                  {wallet.name}
-                </option>
-              ))}
-            </select>
-
-
+            name="wallet_id"
+            value={formData.wallet_id}
+            onChange={handleChange}
+            required
+            className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">Select Wallet</option>
+            {wallets.map((wallet) => (
+              <option key={wallet.id} value={wallet.id}>
+                {wallet.name}
+              </option>
+            ))}
+          </select>
 
             <input
               name="date"
@@ -187,11 +178,13 @@ useEffect(() => {
           </button>
         </form>
       </div>
-      <div className="max-w-4xl mx-auto my-8 p-6 bg-amber-200 rounded-xl shadow-lg border border-amber-400">
-  <h1 className="text-2xl font-bold mb-4 text-gray-800">📊 Transaction History</h1>
-  <TransactionsTable transactions={transactions} />
-</div>
 
+      <div className="max-w-4xl mx-auto my-8 p-6 bg-amber-200 rounded-xl shadow-lg border border-amber-400">
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">
+          📊 Transaction History
+        </h1>
+        <TransactionsTable transactions={transactions} />
+      </div>
     </div>
   );
 }
