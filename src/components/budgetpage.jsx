@@ -75,62 +75,64 @@ export default function BudgetsPage() {
       <h1 className="text-4xl font-bold mb-8 text-gray-800">📅 Budgets</h1>
 
       {/* Add Budget */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white rounded-lg shadow p-6 mb-8"
-      >
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">
-          Add New Budget
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <select
-            name="category_id"
-            value={formData.category_id}
-            onChange={handleChange}
-            required
-            className="p-3 border border-gray-300 rounded"
-          >
-            <option value="">Select Category</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <input
-            name="amount"
-            type="number"
-            step="0.01"
-            placeholder="Budget Amount"
-            value={formData.amount}
-            onChange={handleChange}
-            required
-            className="p-3 border border-gray-300 rounded"
-          />
-          <input
-            name="month"
-            type="number"
-            min="1"
-            max="12"
-            value={formData.month}
-            onChange={handleChange}
-            className="p-3 border border-gray-300 rounded"
-          />
-          <input
-            name="year"
-            type="number"
-            value={formData.year}
-            onChange={handleChange}
-            className="p-3 border border-gray-300 rounded"
-          />
-        </div>
-        <button
-          type="submit"
-          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded"
-        >
-          Add Budget
-        </button>
-      </form>
+      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 mb-8">
+  <h2 className="text-xl font-semibold mb-4 text-gray-900">
+    Add New Budget
+  </h2>
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <select
+      name="category_id"
+      value={formData.category_id}
+      onChange={handleChange}
+      required
+      className="p-3 border border-gray-300 rounded text-gray-900"
+    >
+      <option value="">Select Category</option>
+      {categories.map((c) => (
+        <option key={c.id} value={c.id}>
+          {c.name}
+        </option>
+      ))}
+    </select>
+
+    <input
+      name="amount"
+      type="number"
+      step="0.01"
+      placeholder="Budget Amount"
+      value={formData.amount}
+      onChange={handleChange}
+      required
+      className="p-3 border border-gray-300 rounded text-gray-900 placeholder-gray-600"
+    />
+
+    <input
+      name="month"
+      type="number"
+      min="1"
+      max="12"
+      value={formData.month}
+      onChange={handleChange}
+      className="p-3 border border-gray-300 rounded text-gray-900"
+    />
+
+    <input
+      name="year"
+      type="number"
+      value={formData.year}
+      onChange={handleChange}
+      className="p-3 border border-gray-300 rounded text-gray-900"
+    />
+  </div>
+
+  <button
+    type="submit"
+    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded"
+  >
+    Add Budget
+  </button>
+</form>
+
 
       {/* Budgets Table */}
       <div className="bg-white rounded-lg shadow p-6">
@@ -148,7 +150,7 @@ export default function BudgetsPage() {
         <th className="py-3 px-5 border-b">Budgeted</th>
         <th className="py-3 px-5 border-b">Spent</th>
         <th className="py-3 px-5 border-b">Progress</th>
-        <th className="py-3 px-5 border-b">Edit</th>
+        {/* <th className="py-3 px-5 border-b">Edit</th> */}
       </tr>
     </thead>
     <tbody className="divide-y divide-gray-100">
@@ -177,15 +179,8 @@ export default function BudgetsPage() {
               ></div>
             </div>
           </td>
-          <td className="py-3 px-5">
-            <input
-              type="number"
-              step="0.01"
-              defaultValue={b.amount}
-              onBlur={(e) => handleEdit(b.id, e.target.value)}
-              className="w-24 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-400"
-            />
-          </td>
+     
+
         </tr>
       ))}
     </tbody>

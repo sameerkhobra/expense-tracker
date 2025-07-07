@@ -274,6 +274,22 @@ app.put('/budgets/:id', (req, res) => {
   });
 });
 
+// GET /transactions?future_expenses=1
+app.get('/transactions', (req, res) => {
+  if (req.query.future_expenses === '1') {
+    db.all(
+      "SELECT * FROM Transactions WHERE date > CURRENT_DATE AND type = 'expense' ORDER BY date ASC",
+      [],
+      (err, rows) => {
+        if (err) throw err;
+        res.json(rows);
+      }
+    );
+  } else {
+    // your normal transactions query here
+  }
+});
+
 
 // ✅ Start server
 const PORT = process.env.PORT || 4000;

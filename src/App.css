@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -6,6 +7,60 @@
   text-align: center;
 }
 
+/* Smooth scrolling for sections */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar cross-browser */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+/* Cursor grab for drag-to-scroll elements */
+.cursor-grab {
+  cursor: grab;
+}
+.cursor-grab:active {
+  cursor: grabbing;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Text gradient effect (for headings) */
+.text-gradient {
+  background: linear-gradient(90deg, #4f46e5, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Fade-in animation */
+.fade-in {
+  animation: fadeIn 0.8s ease-in forwards;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Logo styling */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -40,4 +95,8 @@
 
 .read-the-docs {
   color: #888;
+}
+.read-the-docs:hover {
+  color: #333;
+  text-decoration: underline;
 }
