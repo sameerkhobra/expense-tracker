@@ -7,6 +7,8 @@ import Dashboard from "./components/dashboard";
 import BudgetsPage from "./components/budgetpage";
 import ReportsPage from "./components/reportpage";
 import "./App.css"; // Ensure you have your styles imported
+import WalletsPage from "./components/wallet";
+import TransactionsByWeekPage from "./components/weektrans";
 
 export default function App() {
   const [wallets, setWallets] = useState([]);
@@ -71,6 +73,12 @@ export default function App() {
             <BudgetsPage/>
       </div>
       <ReportsPage/>
+       <div className="min-h-screen bg-yellow-200">
+            <WalletsPage/>
+      </div>
+      <div className="min-h-screen bg-yellow-200">
+            <TransactionsByWeekPage/>
+      </div>
     </div>
   );
 }

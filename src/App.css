@@ -41,7 +41,7 @@ html {
 /* Text gradient effect (for headings) */
 .text-gradient {
   background: linear-gradient(90deg, #4f46e5, #3b82f6);
-  -webkit-background-clip: text;
+  /* -webkit-background-clip: text; */
   -webkit-text-fill-color: transparent;
 }
 

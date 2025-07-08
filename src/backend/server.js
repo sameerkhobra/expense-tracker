@@ -290,6 +290,26 @@ app.get('/transactions', (req, res) => {
   }
 });
 
+// Get all wallets
+app.get("/wallets", async (req, res) => {
+  const result = await pool.query("SELECT * FROM Wallets");
+  res.json(result.rows);
+});
+
+// Get all balances
+app.get("/balances", async (req, res) => {
+  const result = await pool.query("SELECT * FROM Balances");
+  res.json(result.rows);
+});
+
+app.get("/transactions", async (req, res) => {
+  const result = await pool.query(
+    "SELECT * FROM Transactions ORDER BY date DESC"
+  );
+  res.json(result.rows);
+});
+
+
 
 // ✅ Start server
 const PORT = process.env.PORT || 4000;
