@@ -5,7 +5,7 @@ export default function Balance() {
   const [wallets, setWallets] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:4000/balances')
+    fetch('http://localhost:5000/balances')
       .then(res => res.json())
       .then(data => setWallets(data))
       .catch(err => console.error(err));

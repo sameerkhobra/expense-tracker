@@ -1,0 +1,7 @@
+# DB_HOST=localhost
+# DB_USER=root
+# DB_PASSWORD="Sameer@123"
+# DB_NAME=exp_tracker
+# DB_PORT=3306
+//for connection in sql
+//change server to 4000 for sql

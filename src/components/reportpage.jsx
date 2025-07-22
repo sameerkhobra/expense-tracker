@@ -19,7 +19,7 @@ export default function ReportsPage() {
   const [categorySummary, setCategorySummary] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/transactions")
+    fetch("http://localhost:5000/transactions")
       .then((res) => res.json())
       .then((data) => {
         setTransactions(data);
@@ -28,7 +28,7 @@ export default function ReportsPage() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:4000/expenses-by-category")
+    fetch("http://localhost:5000/expenses-by-category")
       .then((res) => res.json())
       .then((data) => {
         const formatted = data.map((item) => ({

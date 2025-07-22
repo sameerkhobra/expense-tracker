@@ -16,7 +16,7 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/balances")
+    fetch("http://localhost:5000/balances")
       .then(res => res.json())
       .then(data => {
         console.log("Balances:", data);
@@ -26,7 +26,7 @@ export default function Dashboard() {
   }, []);
 
  useEffect(() => {
-  fetch("http://localhost:4000/expenses-by-category")
+  fetch("http://localhost:5000/expenses-by-category")
     .then(res => res.json())
     .then(data => {
       const formatted = data.map(item => ({
@@ -41,7 +41,7 @@ export default function Dashboard() {
 
 
   useEffect(() => {
-    fetch("http://localhost:4000/transactions")
+    fetch("http://localhost:5000/transactions")
       .then(res => res.json())
       .then(data => {
         console.log("Transactions:", data);

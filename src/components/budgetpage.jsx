@@ -14,7 +14,7 @@ export default function BudgetsPage() {
 
   // Fetch budgets
   useEffect(() => {
-    fetch("http://localhost:4000/budgets")
+    fetch("http://localhost:5000/budgets")
       .then((res) => res.json())
       .then((data) => {
         console.log("Budgets:", data);
@@ -25,7 +25,7 @@ export default function BudgetsPage() {
 
   // Fetch categories for dropdown
   useEffect(() => {
-    fetch("http://localhost:4000/categories")
+    fetch("http://localhost:5000/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error(err));
@@ -44,7 +44,7 @@ export default function BudgetsPage() {
       year: parseInt(formData.year),
     };
 
-    const res = await fetch("http://localhost:4000/budgets", {
+    const res = await fetch("http://localhost:5000/budgets", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newBudget),
@@ -57,7 +57,7 @@ export default function BudgetsPage() {
   };
 
   const handleEdit = async (id, newAmount) => {
-    const res = await fetch(`http://localhost:4000/budgets/${id}`, {
+    const res = await fetch(`http://localhost:5000/budgets/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: parseFloat(newAmount) }),

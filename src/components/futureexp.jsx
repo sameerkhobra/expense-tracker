@@ -15,21 +15,21 @@ export default function FutureExpenditurePage() {
   
   // Get categories for dropdown
   useEffect(() => {
-    fetch("http://localhost:4000/categories")
+    fetch("http://localhost:5000/categories")
       .then((res) => res.json())
       .then(setCategories);
   }, []);
 
   // Get wallets for dropdown
   useEffect(() => {
-    fetch("http://localhost:4000/wallets")
+    fetch("http://localhost:5000/wallets")
       .then((res) => res.json())
       .then(setWallets);
   }, []);
 
   // Get future expenses
   useEffect(() => {
-    fetch("http://localhost:4000/transactions?future_expenses=1")
+    fetch("http://localhost:5000/transactions?future_expenses=1")
       .then((res) => res.json())
       .then(setFutureExpenses);
   }, []);
@@ -47,7 +47,7 @@ export default function FutureExpenditurePage() {
       category_id: parseInt(formData.category_id),
       wallet_id: formData.wallet_id ? parseInt(formData.wallet_id) : null,
     };
-    const res = await fetch("http://localhost:4000/transactions", {
+    const res = await fetch("http://localhost:5000/transactions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newTx),
@@ -77,7 +77,7 @@ const handleMarkAsPaid = async (expenseId) => {
   };
 
   // 1. Add to main Transactions
-  await fetch("http://localhost:4000/transactions", {
+  await fetch("http://localhost:5000/transactions", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newTransaction),
@@ -89,7 +89,7 @@ const handleMarkAsPaid = async (expenseId) => {
 
 // Remove a future expense
 const handleRemove = async (expenseId) => {
-  await fetch(`http://localhost:4000/transactions/${expenseId}`, {
+  await fetch(`http://localhost:5000/transactions/${expenseId}`, {
     method: "DELETE",
   });
 

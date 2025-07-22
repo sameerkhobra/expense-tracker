@@ -8,7 +8,7 @@ export default function TransactionPage() {
 
   // ✅ Fetch categories
   useEffect(() => {
-    fetch("http://localhost:4000/categories")
+    fetch("http://localhost:5000/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error(err));
@@ -16,7 +16,7 @@ export default function TransactionPage() {
 
   // ✅ Fetch wallets for the wallet <select>
  useEffect(() => {
-  fetch("http://localhost:4000/wallets")
+  fetch("http://localhost:5000/wallets")
     .then(res => res.json())
     .then(data => {
       console.log("Wallets API response:", data); // See this in console!
@@ -28,7 +28,7 @@ export default function TransactionPage() {
 
   // ✅ Fetch transactions
   useEffect(() => {
-    fetch("http://localhost:4000/transactions")
+    fetch("http://localhost:5000/transactions")
       .then((res) => res.json())
       .then((data) =>
         setTransactions(
@@ -50,8 +50,16 @@ export default function TransactionPage() {
     description: "",
   });
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // const handleChange = (e) =>
+  //   setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleChange = (e) => {
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+};
+
 
   const handleAddTransaction = async (e) => {
     e.preventDefault();
@@ -65,7 +73,7 @@ export default function TransactionPage() {
       description: formData.description,
     };
 
-    const res = await fetch("http://localhost:4000/transactions", {
+    const res = await fetch("http://localhost:5000/transactions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newTx),
@@ -121,20 +129,21 @@ export default function TransactionPage() {
               <option value="expense">Expense</option>
             </select>
 
-            <select
-              name="category_id"
-              value={formData.category_id}
-              onChange={handleChange}
-              required
-              className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="">Select Category</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+        <select
+  name="category_id"
+  value={formData?.category_id || ""}
+  onChange={handleChange}
+  required
+  className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+>
+  <option value="">Select Category</option>
+  {Array.isArray(categories) &&
+    categories.map((cat) => (
+      <option key={cat.id || cat._id} value={cat.id || cat._id}>
+        {cat.name}
+      </option>
+    ))}
+</select>
 
             <select
             name="wallet_id"

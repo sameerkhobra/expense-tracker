@@ -6,7 +6,7 @@ export default function TransactionsByWeekPage() {
   const [selectedWeek, setSelectedWeek] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:4000/transactions")
+    fetch("http://localhost:5000/transactions")
       .then((res) => res.json())
       .then(setTransactions)
       .catch((err) => console.error("Error fetching transactions:", err));

@@ -9,13 +9,24 @@ app.use(cors());
 app.use(express.json());
 
 dotenv.config(); // Make sure this is before using process.env
-
 const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+  console.error("❌ MONGODB_URI is not defined in the environment variables.");
+  process.exit(1);
+}
 
 mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
+.then(() => {
+  console.log("✅ Successfully connected to MongoDB");
+})
+.catch((error) => {
+  console.error("❌ MongoDB connection error:", error.message);
+  process.exit(1);
+});
 
 // ✅ GET all categories
 app.get('/categories', async (req, res) => {

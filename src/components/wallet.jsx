@@ -6,7 +6,7 @@ export default function WalletsPage() {
 
   // Fetch wallets
   useEffect(() => {
-    fetch("http://localhost:4000/wallets")
+    fetch("http://localhost:5000/wallets")
       .then((res) => res.json())
       .then(setWallets)
       .catch((err) => console.error("Error fetching wallets:", err));
@@ -14,7 +14,7 @@ export default function WalletsPage() {
 
   // Fetch balances
   useEffect(() => {
-    fetch("http://localhost:4000/balances")
+    fetch("http://localhost:5000/balances")
       .then((res) => res.json())
       .then(setBalances)
       .catch((err) => console.error("Error fetching balances:", err));
