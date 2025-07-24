@@ -15,7 +15,7 @@ export default function Balance() {
     <div>
       {wallets.map(wallet => (
         <BalanceCard
-          key={wallet.id}
+          key={wallet._id}
           accountName={wallet.wallet_name}
           amount={wallet.amount}
         />

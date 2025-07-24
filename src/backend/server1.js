@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import models from './models/index.js'; // make sure models are correctly defined
+// import { insertWallets } from './script/sc1.js'; // import the function to insert wallets
+// insertWallets();
 
 const app = express();
 app.use(cors());
@@ -136,12 +138,14 @@ app.get('/balances', async (req, res) => {
       .sort({ amount: -1 })
       .limit(4);
 
+    console.log(JSON.stringify(balances, null, 2)); // log the populated result
+
     const formatted = balances.map(b => ({
       id: b._id,
       user_id: b.user_id,
       wallet_id: b.wallet_id?._id || null,
       wallet_name: b.wallet_id?.name || null,
-      amount: b.amount,
+      amount: parseFloat(b.amount.toString()), // 👈 KEY CHANGE HERE
       currency: b.currency,
       last_updated: b.last_updated
     }));
