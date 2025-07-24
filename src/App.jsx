@@ -6,7 +6,7 @@ import TransactionPage from "./components/List";
 import Dashboard from "./components/dashboard";
 import BudgetsPage from "./components/budgetpage";
 import ReportsPage from "./components/reportpage";
-import "./App.css"; // Ensure you have your styles imported
+import "./App.css";
 import WalletsPage from "./components/wallet";
 import TransactionsByWeekPage from "./components/weektrans";
 

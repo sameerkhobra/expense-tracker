@@ -15,15 +15,15 @@ export default function TransactionPage() {
   }, []);
 
   // ✅ Fetch wallets for the wallet <select>
- useEffect(() => {
-  fetch("http://localhost:5000/wallets")
-    .then(res => res.json())
-    .then(data => {
-      console.log("Wallets API response:", data); // See this in console!
-      setWallets(data);
-    })
-    .catch(err => console.error(err));
-}, []);
+  useEffect(() => {
+    fetch("http://localhost:5000/wallets")
+      .then(res => res.json())
+      .then(data => {
+        console.log("Wallets API response:", data); // See this in console!
+        setWallets(data);
+      })
+      .catch(err => console.error(err));
+  }, []);
 
 
   // ✅ Fetch transactions
@@ -54,11 +54,11 @@ export default function TransactionPage() {
   //   setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleChange = (e) => {
-  setFormData({
-    ...formData,
-    [e.target.name]: e.target.value,
-  });
-};
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
 
   const handleAddTransaction = async (e) => {
@@ -129,36 +129,35 @@ export default function TransactionPage() {
               <option value="expense">Expense</option>
             </select>
 
-        <select
-  name="category_id"
-  value={formData?.category_id || ""}
-  onChange={handleChange}
-  required
-  className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
->
-  <option value="">Select Category</option>
-  {Array.isArray(categories) &&
-    categories.map((cat) => (
-      <option key={cat.id || cat._id} value={cat.id || cat._id}>
-        {cat.name}
-      </option>
-    ))}
-</select>
+            <select
+              name="category_id"
+              value={formData?.category_id || ""}
+              onChange={handleChange}
+              required
+              className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="">Select Category</option>
+              {Array.isArray(categories) &&
+                categories.map((cat) => (
+                  <option key={cat.id || cat._id} value={cat.id || cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+            </select>
 
             <select
-            name="wallet_id"
-            value={formData.wallet_id}
-            onChange={handleChange}
-            required
-            className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="">Select Wallet</option>
-            {wallets.map((wallet) => (
-              <option key={wallet.id} value={wallet.id}>
-                {wallet.name}
-              </option>
-            ))}
-          </select>
+              name="wallet_id"
+              value={formData.wallet_id}
+              onChange={handleChange}
+              required
+              className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="">Select Wallet</option>
+              {wallets.map(wallet => (
+                <option key={wallet._id} value={wallet._id}>{wallet.name}</option>
+              ))}
+
+            </select>
 
             <input
               name="date"

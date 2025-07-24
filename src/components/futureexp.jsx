@@ -143,11 +143,10 @@ const handleRemove = async (expenseId) => {
       className="p-3 border border-gray-400 rounded w-full text-gray-800 bg-white"
     >
       <option value="">Select Category</option>
-      {categories.map((c) => (
-        <option key={c.id} value={c.id}>
-          {c.name}
-        </option>
-      ))}
+      {categories.map((cat) => (
+  <option key={cat._id} value={cat._id}>{cat.name}</option>
+))}
+
     </select>
 
     <select
@@ -157,11 +156,13 @@ const handleRemove = async (expenseId) => {
       className="p-3 border border-gray-400 rounded w-full text-gray-800 bg-white"
     >
       <option value="">Select Wallet (optional)</option>
-      {wallets.map((w) => (
-        <option key={w.id} value={w.id}>
-          {w.name}
-        </option>
-      ))}
+      {wallets.map((w, index) => (
+  <option key={index} value={w.name}>
+    {w.name}
+  </option>
+))}
+
+
     </select>
 
     <input

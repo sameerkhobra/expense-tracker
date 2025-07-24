@@ -88,11 +88,10 @@ export default function BudgetsPage() {
       className="p-3 border border-gray-300 rounded text-gray-900"
     >
       <option value="">Select Category</option>
-      {categories.map((c) => (
-        <option key={c.id} value={c.id}>
-          {c.name}
-        </option>
-      ))}
+     {categories.map((cat) => (
+  <option key={cat._id} value={cat._id}>{cat.name}</option>
+))}
+
     </select>
 
     <input

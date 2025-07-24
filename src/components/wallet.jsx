@@ -25,15 +25,14 @@ export default function WalletsPage() {
       <h1 className="text-4xl font-bold mb-8 text-gray-800">💼 My Wallets</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {wallets.map((wallet) => {
-          // ✅ CORRECT: use wallet_id to match
+        {wallets.map((wallet,idx) => {
           const balance = balances.find(
             (b) => b.wallet_id === wallet.id
           );
 
           return (
             <div
-              key={wallet.id}
+              key={wallet.id || idx}
               className="bg-white rounded-lg shadow p-6 flex flex-col justify-between"
             >
               <h2 className="text-xl font-semibold text-gray-700 mb-2">

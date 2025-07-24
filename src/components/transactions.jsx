@@ -8,11 +8,13 @@ export default function TransactionsTable({ transactions }) {
     setShowTable(!showTable);
   };
 
-  const filteredTransactions = transactions.filter(
-    (tx) =>
-      tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tx.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // ✅ Safe version using optional chaining and default fallback
+const filteredTransactions = transactions.filter((tx) => {
+  const desc = tx.description?.toLowerCase() || "";
+  const cat = tx.category?.toLowerCase() || "";
+  const search = searchTerm.toLowerCase();
+  return desc.includes(search) || cat.includes(search);
+});
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-2xl shadow-md">
@@ -50,7 +52,7 @@ export default function TransactionsTable({ transactions }) {
               {filteredTransactions.length > 0 ? (
                 filteredTransactions.map((tx) => (
                   <tr
-                    key={tx.id}
+                    key={tx.id || `${tx.date}-${tx.description}`}
                     className="hover:bg-blue-50 transition-colors duration-200"
                   >
                     <td className="py-3 px-6 text-sm text-gray-700">{tx.date}</td>

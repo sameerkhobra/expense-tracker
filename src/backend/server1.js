@@ -267,6 +267,8 @@ app.get('/budgets', async (req, res) => {
       { $sort: { year: -1, month: -1, category_name: 1 } }
     ]);
     res.json(results);
+    console.log(results);
+    
   } catch (err) {
     console.error('Error fetching budgets:', err);
     res.status(500).json({ error: 'Database error' });
