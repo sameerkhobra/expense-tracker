@@ -59,8 +59,9 @@ const filteredTransactions = transactions.filter((tx) => {
                     <td className="py-3 px-6 text-sm text-gray-700">{tx.wallet_name}</td>
 
                     <td className="py-3 px-6 text-sm text-green-600 font-semibold">
-                      ${Number(tx.amount).toFixed(2)}
-                    </td>
+  {isNaN(Number(tx.amount)) ? "N/A" : `$${Number(tx.amount).toFixed(2)}`}
+</td>
+
                     <td className="py-3 px-6 text-sm capitalize text-gray-700">
                       {tx.type}
                     </td>

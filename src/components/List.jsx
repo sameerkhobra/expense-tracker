@@ -62,22 +62,29 @@ export default function TransactionPage() {
 
 
   const handleAddTransaction = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const newTx = {
-      amount: parseFloat(formData.amount),
-      type: formData.type,
-      category_id: parseInt(formData.category_id),
-      wallet_id: parseInt(formData.wallet_id),
-      date: formData.date,
-      description: formData.description,
-    };
+  const newTx = {
+    user_id: "64e123abc456def7890abc12", // 🔁 Replace this with a real ObjectId from your MongoDB `users` collection
+    amount: parseFloat(formData.amount),
+    type: formData.type,
+    category_id: formData.category_id,
+    wallet_id: formData.wallet_id,
+    date: formData.date,
+    description: formData.description,
+  };
 
+  try {
     const res = await fetch("http://localhost:5000/transactions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newTx),
     });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || "Transaction failed");
+    }
 
     const savedTx = await res.json();
 
@@ -90,7 +97,12 @@ export default function TransactionPage() {
       date: "",
       description: "",
     });
-  };
+  } catch (err) {
+    console.error("Failed to add transaction:", err.message);
+    alert("Error: " + err.message);
+  }
+};
+
 
   return (
     <div>

@@ -3,8 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import models from './models/index.js'; // make sure models are correctly defined
-// import { insertWallets } from './script/sc1.js'; // import the function to insert wallets
-// insertWallets();
 
 const app = express();
 app.use(cors());
@@ -77,13 +75,15 @@ app.get('/transactions', async (req, res) => {
 
 // ✅ POST a new transaction and update balance
 app.post('/transactions', async (req, res) => {
-  const { amount, type, category_id, wallet_id, date, description } = req.body;
+  const { amount: rawAmount, type, category_id, wallet_id, date, description, user_id } = req.body;
+  const amount = typeof rawAmount === 'object' ? rawAmount.value : rawAmount;
 
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     const newTx = await models.Transaction.create([{
+      user_id,
       amount,
       type,
       category_id,
@@ -93,19 +93,18 @@ app.post('/transactions', async (req, res) => {
     }], { session });
 
     const operator = type === 'expense' ? -1 : 1;
+    const amountDecimal = mongoose.Types.Decimal128.fromString(amount.toString());
 
     const balance = await models.Balance.findOneAndUpdate(
       { wallet_id },
       {
-        $inc: { amount: operator * parseFloat(amount) },
+        $inc: { amount: operator === 1 ? amountDecimal : mongoose.Types.Decimal128.fromString((-parseFloat(amount)).toString()) },
         last_updated: new Date()
       },
       { new: true, session }
     );
 
-    if (!balance) {
-      throw new Error('Wallet balance not found');
-    }
+    if (!balance) throw new Error('Wallet balance not found');
 
     await session.commitTransaction();
     session.endSession();
@@ -118,6 +117,7 @@ app.post('/transactions', async (req, res) => {
     res.status(500).json({ error: 'Transaction failed' });
   }
 });
+
 
 // ✅ GET all wallets
 app.get('/wallets', async (req, res) => {
@@ -226,7 +226,11 @@ app.get('/budgets', async (req, res) => {
       {
         $lookup: {
           from: 'transactions',
-          let: { catId: '$category_id', m: '$month', y: '$year' },
+          let: {
+            catId: '$category_id',
+            m: '$month',
+            y: '$year'
+          },
           pipeline: [
             {
               $match: {
@@ -251,7 +255,13 @@ app.get('/budgets', async (req, res) => {
               $map: {
                 input: '$matchedTransactions',
                 as: 'tx',
-                in: { $toDouble: '$$tx.amount' }
+                in: {
+                  $cond: {
+                    if: { $isNumber: '$$tx.amount' },
+                    then: '$$tx.amount',
+                    else: { $toDouble: '$$tx.amount' }
+                  }
+                }
               }
             }
           }
@@ -259,6 +269,7 @@ app.get('/budgets', async (req, res) => {
       },
       {
         $project: {
+          _id: 0,
           id: '$_id',
           category_name: '$category.name',
           category_id: 1,
@@ -270,19 +281,20 @@ app.get('/budgets', async (req, res) => {
       },
       { $sort: { year: -1, month: -1, category_name: 1 } }
     ]);
+
     res.json(results);
-    console.log(results);
-    
   } catch (err) {
     console.error('Error fetching budgets:', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
 
+
 // ✅ POST new budget
 app.post('/budgets', async (req, res) => {
   try {
-    const { user_id = 1, category_id, amount, month, year } = req.body;
+    const defaultUserId = new mongoose.Types.ObjectId("665e1a93f5b0c0bdb4fa49cc");
+    const { user_id = defaultUserId, category_id, amount, month, year } = req.body;
 
     if (!category_id || !amount || !month || !year) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -290,8 +302,8 @@ app.post('/budgets', async (req, res) => {
 
     const newBudget = await models.Budget.create({
       user_id,
-      category_id,
-      amount,
+      category_id: new mongoose.Types.ObjectId(category_id),
+      amount: mongoose.Types.Decimal128.fromString(amount.toString()),
       month,
       year
     });
@@ -303,6 +315,7 @@ app.post('/budgets', async (req, res) => {
   }
 });
 
+
 // ✅ PUT update budget
 app.put('/budgets/:id', async (req, res) => {
   try {
@@ -310,11 +323,15 @@ app.put('/budgets/:id', async (req, res) => {
 
     const updated = await models.Budget.findByIdAndUpdate(
       req.params.id,
-      { amount },
+      {
+        amount: mongoose.Types.Decimal128.fromString(amount.toString())
+      },
       { new: true }
     );
 
-    if (!updated) return res.status(404).json({ error: 'Budget not found' });
+    if (!updated) {
+      return res.status(404).json({ error: 'Budget not found' });
+    }
 
     res.json(updated);
   } catch (err) {

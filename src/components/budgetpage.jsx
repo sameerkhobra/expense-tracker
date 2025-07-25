@@ -153,8 +153,8 @@ export default function BudgetsPage() {
       </tr>
     </thead>
     <tbody className="divide-y divide-gray-100">
-      {budgets.map((b) => (
-        <tr key={b.id} className="hover:bg-gray-50">
+      {budgets.map((b,index) => (
+        <tr key={b._id || b.id || index} className="hover:bg-gray-50">
           <td className="py-3 px-5 text-gray-800">{b.category_name}</td>
           <td className="py-3 px-5 text-gray-800 font-medium">
             ₹ {Number(b.amount).toFixed(2)}
